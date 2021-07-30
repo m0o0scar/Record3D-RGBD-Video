@@ -8,13 +8,38 @@ export class Record3DVideo {
   #videoTexture: THREE.VideoTexture;
   #videoMaterial: THREE.ShaderMaterial;
 
-  constructor(videoSource: Record3DVideoSource) {
+  constructor() {
     this.videoObject = new THREE.Group();
     this.#videoMaterial = getPointCloudShaderMaterial();
-    this.setVideoSource(videoSource);
   }
 
-  setVideoSource(videoSource: Record3DVideoSource) {
+  async loadURL(url: string) {
+    // TODO show loading screen
+    const source = new Record3DVideoSource();
+    await source.loadURL(url);
+    this.setVideoSource(source);
+  }
+
+  toggle(value = undefined) {
+    this.#videoSource.toggle(value);
+  }
+
+  setScale(scale: number) {
+    this.setMaterialUniforms((uniforms) => (uniforms.scale.value = scale));
+  }
+
+  setPointSize(ptSize: number) {
+    this.setMaterialUniforms((uniforms) => (uniforms.ptSize.value = ptSize));
+  }
+
+  setDepthRange(near: number, far: number) {
+    this.setMaterialUniforms((uniforms) => {
+      uniforms.depthRangeFilterNear.value = near;
+      uniforms.depthRangeFilterFar.value = far;
+    });
+  }
+
+  private setVideoSource(videoSource: Record3DVideoSource) {
     if (this.#videoSource !== videoSource) {
       this.#videoSource = videoSource;
 
@@ -30,7 +55,7 @@ export class Record3DVideo {
     this.renderPoints();
   }
 
-  onVideoTagChanged() {
+  private onVideoTagChanged() {
     const { videoTag } = this.#videoSource;
     const { videoWidth, videoHeight } = videoTag;
 
@@ -55,13 +80,13 @@ export class Record3DVideo {
     this.renderPoints();
   }
 
-  removeVideoObjectChildren() {
+  private removeVideoObjectChildren() {
     while (this.videoObject.children.length > 0) {
       this.videoObject.remove(this.videoObject.children[0]);
     }
   }
 
-  renderPoints() {
+  private renderPoints() {
     this.removeVideoObjectChildren();
 
     let { width, height } = this.#videoSource.getVideoSize();
@@ -85,28 +110,9 @@ export class Record3DVideo {
     this.videoObject.add(points);
   }
 
-  toggle(value = undefined) {
-    this.#videoSource.toggle(value);
-  }
-
-  setMaterialUniforms(setter: (uniforms: any) => void) {
+  private setMaterialUniforms(setter: (uniforms: any) => void) {
     for (const video of this.videoObject.children) {
       setter(((video as THREE.Points).material as any).uniforms);
     }
-  }
-
-  setScale(scale: number) {
-    this.setMaterialUniforms((uniforms) => (uniforms.scale.value = scale));
-  }
-
-  setPointSize(ptSize: number) {
-    this.setMaterialUniforms((uniforms) => (uniforms.ptSize.value = ptSize));
-  }
-
-  setDepthRange(near: number, far: number) {
-    this.setMaterialUniforms((uniforms) => {
-      uniforms.depthRangeFilterNear.value = near;
-      uniforms.depthRangeFilterFar.value = far;
-    });
   }
 }

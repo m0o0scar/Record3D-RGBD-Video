@@ -142,7 +142,7 @@ export function getPointCloudShaderMaterial()
             scale: { type: 'f', value: 1.0 },
             ptSize: { type: 'f', value: 1.0 },
             depthRangeFilterNear: { type: 'f', value: 0.1 },
-            depthRangeFilterFar: { type: 'f', value: 1.0 },
+            depthRangeFilterFar: { type: 'f', value: 5.0 },
         },
         side: THREE.DoubleSide,
         transparent: false,

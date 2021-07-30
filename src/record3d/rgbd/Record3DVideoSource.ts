@@ -13,8 +13,8 @@ export class Record3DVideoSource {
     this.intrMat = new THREE.Matrix3();
 
     this.videoTag = document.createElement('video');
-    this.videoTag.autoplay = true;
-    // this.videoTag.muted = true;
+    // this.videoTag.autoplay = true;
+    this.videoTag.muted = true;
     this.videoTag.loop = true;
     this.videoTag.playsInline = true;
     this.videoTag.setAttribute('playsinline', '');
@@ -25,7 +25,13 @@ export class Record3DVideoSource {
     };
   }
 
-  load(videoFile: Blob) {
+  async loadURL(videoURL: string) {
+    const response = await fetch(videoURL);
+    const file = await response.blob();
+    this.loadFile(file);
+  }
+
+  loadFile(videoFile: Blob) {
     const dataURLReader = new FileReader();
     dataURLReader.onload = (e) => {
       this.videoTag.src = e.target.result as string;
