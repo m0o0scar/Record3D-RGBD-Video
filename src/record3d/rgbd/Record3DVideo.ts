@@ -2,6 +2,12 @@ import * as THREE from 'three';
 import { getPointCloudShaderMaterial } from './pointcloud-material';
 import { Record3DVideoSource } from './Record3DVideoSource';
 
+function distanceToPointSize(distance: number) {
+  if (distance < 1) return 10;
+  if (distance > 3) return 1;
+  return distance * -4.5 + 14.5;
+}
+
 export class Record3DVideo extends THREE.Group {
   depthRange: number[] = [0.1, 1];
 
@@ -30,6 +36,16 @@ export class Record3DVideo extends THREE.Group {
     await source.loadURL(url);
     this.setVideoSource(source);
     this.setDepthRange(this.depthRange);
+  }
+
+  adjustPointSize(cameraPosition: THREE.Vector3) {
+    if (this.#videoSource) {
+      const resolution = this.#videoSource.getVideoSize().height;
+      const multiplier = 640 / resolution;
+      const distance = this.position.distanceTo(cameraPosition);
+      const pointSize = distanceToPointSize(distance) * multiplier;
+      this.setPointSize(pointSize);
+    }
   }
 
   toggle(value = undefined) {
