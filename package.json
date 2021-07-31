@@ -2,19 +2,22 @@
   "name": "threejs-rgbd-video",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
     "start": "parcel index.html public/**/* --no-cache"
   },
   "author": "Oscar <moscartong@gmail.com>",
   "license": "MIT",
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
+  "dependencies": {
+    "@nospoon/3utils": "^0.1.2",
+    "three": "^0.130.1"
+  },
   "devDependencies": {
     "@types/three": "^0.130.1",
     "parcel-bundler": "^1.12.5",
     "typescript": "^4.3.5"
-  },
-  "dependencies": {
-    "@nospoon/3utils": "^0.1.2",
-    "three": "^0.130.1"
   }
 }

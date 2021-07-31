@@ -136,17 +136,17 @@ export function getPointCloudShaderMaterial()
 
     return new THREE.ShaderMaterial({
         uniforms: {
-            texImg: { type: 't', value: new THREE.Texture() },
-            texSize: { type: 'i2', value: [0, 0] },
-            iK: { type: 'f4', value: [0, 0, 0, 0] },
-            scale: { type: 'f', value: 1.0 },
-            ptSize: { type: 'f', value: 1.0 },
-            depthRangeFilterNear: { type: 'f', value: 0.1 },
-            depthRangeFilterFar: { type: 'f', value: 5.0 },
+            texImg: { value: new THREE.Texture() },
+            texSize: { value: [0, 0] },
+            iK: { value: [0, 0, 0, 0] },
+            scale: { value: 1.0 },
+            ptSize: { value: 1.0 },
+            depthRangeFilterNear: { value: 0.1 },
+            depthRangeFilterFar: { value: 5.0 },
         },
         side: THREE.DoubleSide,
         transparent: false,
         vertexShader: vertShaderSrc,
-        fragmentShader: fragShaderSrc
+        fragmentShader: fragShaderSrc,
     });
 }
