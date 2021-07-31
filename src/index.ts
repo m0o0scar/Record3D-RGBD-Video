@@ -5,7 +5,7 @@ import { Record3DVideo } from './record3d/rgbd/Record3DVideo';
 const stage = new Stage({ enableAxesHelper: true, enableGridHelper: true });
 
 const video = new Record3DVideo();
-video.depthRange = [0.1, 4];
+video.depthRange = [0.1, 1];
 stage.scene.add(video);
 video.loadURL('/public/sample.mp4');
 

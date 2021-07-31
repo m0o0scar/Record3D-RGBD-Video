@@ -97,6 +97,13 @@ export function getPointCloudShaderMaterial()
                 (iK.y * float(ptY) + iK.w) * currDepth,
                 -currDepth
             );
+
+            float maxSize = (depthRangeFilterFar - depthRangeFilterNear) / 2.0;
+            if (ptPos.x > maxSize || ptPos.x < -maxSize || ptPos.y > maxSize || ptPos.y < -maxSize) {
+                vShouldDiscard = 1.0;
+                gl_Position = vec4(0.0);
+                return;
+            }
             
             vec4 mvPos = modelViewMatrix * vec4(ptPos, 1.0);
             gl_Position = projectionMatrix * mvPos;
