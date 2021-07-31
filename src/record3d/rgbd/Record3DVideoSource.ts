@@ -5,7 +5,7 @@ export class Record3DVideoSource {
   intrMat: THREE.Matrix3;
   videoTag: HTMLVideoElement;
 
-  onVideoChange: () => void;
+  onVideoChange?: () => void;
 
   #lastVideoSize = { width: 0, height: 0 };
 
@@ -21,7 +21,7 @@ export class Record3DVideoSource {
     this.videoTag.onloadeddata = () => {
       this.isVideoLoaded = true;
       this.#lastVideoSize = { width: this.videoTag.videoWidth, height: this.videoTag.videoHeight };
-      this.onVideoChange();
+      this.onVideoChange?.();
     };
   }
 
@@ -34,13 +34,13 @@ export class Record3DVideoSource {
   loadFile(videoFile: Blob) {
     const dataURLReader = new FileReader();
     dataURLReader.onload = (e) => {
-      this.videoTag.src = e.target.result as string;
+      this.videoTag.src = e.target?.result as string;
     };
     dataURLReader.readAsDataURL(videoFile);
 
     const binaryMetadataReader = new FileReader();
     binaryMetadataReader.onload = (e) => {
-      const fileContents = e.target.result as string;
+      const fileContents = e.target?.result as string;
       let meta = fileContents.substr(fileContents.lastIndexOf('{"intrinsic'));
       meta = meta.substr(0, meta.length - 1);
       const metadata = JSON.parse(meta);
@@ -61,6 +61,7 @@ export class Record3DVideoSource {
       case true:
         this.videoTag.play();
         break;
+
       case false:
         this.videoTag.pause();
         break;
