@@ -6,7 +6,7 @@ const stage = new Stage();
 stage.renderer.setClearColor(new THREE.Color(0));
 
 const video = new Record3DVideo();
-video.depthRange = [0.1, 3];
+video.depthRange = [0.1, 0.7];
 stage.scene.add(video);
-video.loadURL('/public/sample3.mp4');
+video.loadURL('/public/sample2.mp4');
 (window as any).video = video;

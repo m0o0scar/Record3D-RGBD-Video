@@ -10,7 +10,7 @@ export class Record3DVideo extends THREE.Group {
   #videoSource?: Record3DVideoSource;
   #videoTexture?: THREE.VideoTexture;
 
-  #rangeBox: THREE.Mesh;
+  #rangeBox: THREE.LineSegments;
 
   constructor() {
     super();
@@ -19,8 +19,9 @@ export class Record3DVideo extends THREE.Group {
     this.add(this.#videoObject);
 
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const boxMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
-    this.#rangeBox = new THREE.Mesh(boxGeometry, boxMaterial);
+    const boxEdges = new THREE.EdgesGeometry(boxGeometry);
+    const boxMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
+    this.#rangeBox = new THREE.LineSegments(boxEdges, boxMaterial);
     this.add(this.#rangeBox);
   }
 
