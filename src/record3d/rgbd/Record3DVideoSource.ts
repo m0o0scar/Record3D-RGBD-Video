@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { md5 } from 'hash-wasm';
 
 export class Record3DVideoSource {
   isVideoLoaded = false;
@@ -32,6 +33,7 @@ export class Record3DVideoSource {
   }
 
   loadFile(videoFile: Blob) {
+    console.log(videoFile.size);
     const dataURLReader = new FileReader();
     dataURLReader.onload = (e) => {
       this.videoTag.src = e.target?.result as string;
@@ -39,8 +41,13 @@ export class Record3DVideoSource {
     dataURLReader.readAsDataURL(videoFile);
 
     const binaryMetadataReader = new FileReader();
-    binaryMetadataReader.onload = (e) => {
+    binaryMetadataReader.onload = async (e) => {
       const fileContents = e.target?.result as string;
+
+      // calculate md5 hash of the file (only calculate the first 1M for performance consideration)
+      const hash = await md5(fileContents.slice(0, 1024 * 1024));
+      console.log(hash);
+      
       let meta = fileContents.substr(fileContents.lastIndexOf('{"intrinsic'));
       meta = meta.substr(0, meta.length - 1);
       const metadata = JSON.parse(meta);
