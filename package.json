@@ -13,9 +13,11 @@
   ],
   "dependencies": {
     "@nospoon/3utils": "^0.1.2",
+    "dat.gui": "^0.7.7",
     "three": "^0.130.1"
   },
   "devDependencies": {
+    "@types/dat.gui": "^0.7.7",
     "@types/three": "^0.130.1",
     "parcel-bundler": "^1.12.5",
     "typescript": "^4.3.5"
