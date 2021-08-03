@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "start": "parcel index.html public/**/* --no-cache"
+    "start": "parcel index.html public/**/* --no-cache",
+    "build": "parcel build ./index.html"
   },
   "author": "Oscar <moscartong@gmail.com>",
   "license": "MIT",
