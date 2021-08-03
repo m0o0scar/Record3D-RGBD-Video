@@ -3,12 +3,14 @@ import { getPointCloudShaderMaterial } from './pointcloud-material';
 import { Record3DVideoSource } from './Record3DVideoSource';
 
 export class Record3DVideo extends THREE.Group {
-  depthRange: number[] = [0.1, 1];
-
   #videoObject: THREE.Group;
   #videoMaterial: THREE.ShaderMaterial;
   #videoSource?: Record3DVideoSource;
   #videoTexture?: THREE.VideoTexture;
+
+  #pointSize = 1;
+  #rangeNear = 0.1;
+  #rangeFar = 1;
 
   #rangeBox: THREE.LineSegments;
 
@@ -30,7 +32,35 @@ export class Record3DVideo extends THREE.Group {
     const source = new Record3DVideoSource();
     await source.loadURL(url);
     this.setVideoSource(source);
-    this.setDepthRange(this.depthRange);
+
+    this.updateDepthRange();
+  }
+
+  get pointSize() {
+    return this.#pointSize;
+  }
+
+  set pointSize(value: number) {
+    this.#pointSize = value;
+    this.setMaterialUniforms((uniforms) => (uniforms.ptSize.value = value));
+  }
+
+  get rangeNear() {
+    return this.#rangeNear;
+  }
+
+  set rangeNear(value: number) {
+    this.#rangeNear = Math.min(value, this.#rangeFar);
+    this.updateDepthRange();
+  }
+
+  get rangeFar() {
+    return this.#rangeFar;
+  }
+
+  set rangeFar(value: number) {
+    this.#rangeFar = Math.max(value, this.#rangeNear);
+    this.updateDepthRange();
   }
 
   toggle(value = undefined) {
@@ -41,21 +71,15 @@ export class Record3DVideo extends THREE.Group {
     this.setMaterialUniforms((uniforms) => (uniforms.scale.value = scale));
   }
 
-  setPointSize(ptSize: number) {
-    this.setMaterialUniforms((uniforms) => (uniforms.ptSize.value = ptSize));
-  }
-
-  setDepthRange(range: number[]) {
-    this.depthRange = range;
-    const [near, far] = this.depthRange;
-    const size = far - near;
+  private updateDepthRange() {
+    const size = this.#rangeFar - this.#rangeNear;
 
     this.setMaterialUniforms((uniforms) => {
-      uniforms.depthRangeFilterNear.value = near;
-      uniforms.depthRangeFilterFar.value = far;
+      uniforms.depthRangeFilterNear.value = this.#rangeNear;
+      uniforms.depthRangeFilterFar.value = this.#rangeFar;
     });
 
-    this.#videoObject.position.z = near + size / 2;
+    this.#videoObject.position.z = this.#rangeNear + size / 2;
     this.#rangeBox.scale.set(size, size, size);
   }
 
