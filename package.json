@@ -12,7 +12,7 @@
     "last 1 Chrome version"
   ],
   "dependencies": {
-    "@nospoon/3utils": "^0.1.2",
+    "@nospoon/3utils": "^0.1.4",
     "dat.gui": "^0.7.7",
     "hash-wasm": "^4.9.0",
     "three": "^0.130.1"
