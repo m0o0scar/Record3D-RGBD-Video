@@ -24,7 +24,6 @@ export class Record3DVideo extends THREE.Group {
     const boxEdges = new THREE.EdgesGeometry(boxGeometry);
     const boxMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
     this.#rangeBox = new THREE.LineSegments(boxEdges, boxMaterial);
-    this.add(this.#rangeBox);
   }
 
   async loadURL(url: string) {
@@ -79,7 +78,7 @@ export class Record3DVideo extends THREE.Group {
       uniforms.depthRangeFilterFar.value = this.#rangeFar;
     });
 
-    this.#videoObject.position.z = this.#rangeNear + size / 2;
+    this.#rangeBox.position.z = -(this.#rangeNear + size / 2);
     this.#rangeBox.scale.set(size, size, size);
   }
 
@@ -123,6 +122,8 @@ export class Record3DVideo extends THREE.Group {
       this.#videoMaterial.uniforms.iK.value = [ifx, ify, itx, ity];
 
       this.renderPoints();
+      
+      this.add(this.#rangeBox);
     }
   }
 
