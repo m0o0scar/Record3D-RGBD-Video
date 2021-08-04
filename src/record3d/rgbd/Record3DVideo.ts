@@ -62,8 +62,14 @@ export class Record3DVideo extends THREE.Group {
     this.updateDepthRange();
   }
 
-  toggle(value = undefined) {
-    this.#videoSource?.toggle(value);
+  get muted() {
+    return this.#videoSource?.muted || false;
+  }
+
+  set muted(value: boolean) {
+    if (this.#videoSource) {
+      this.#videoSource.muted = value;
+    }
   }
 
   setScale(scale: number) {
