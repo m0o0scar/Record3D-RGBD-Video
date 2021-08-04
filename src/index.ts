@@ -5,7 +5,7 @@ import { Stage, VRButton } from '@nospoon/3utils';
 import { InteractiveGroup } from './three/InteractiveGroup';
 import { Record3DVideo } from './record3d/rgbd/Record3DVideo';
 
-const DEFAULT_BACKGROUND_COLOR = 0x999999;
+const DEFAULT_BACKGROUND_COLOR = 0x333333;
 const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 0, 2);
 
 async function main() {
@@ -14,7 +14,6 @@ async function main() {
   // stage
   const stage = new Stage({
     cameraPosition: DEFAULT_CAMERA_POSITION,
-    enableGridHelper: true,
     enableVR: supportVR,
     enableControllerPointer: true,
   });
@@ -22,7 +21,7 @@ async function main() {
 
   // rgbd video
   const video = new Record3DVideo();
-  video.loadURL('/public/sample2.mp4');
+  video.loadURL('/public/sample.mp4');
   stage.scene.add(video);
 
   // gui
@@ -51,7 +50,7 @@ async function main() {
     interactiveGroup.setupEventHandlers();
     interactiveGroup.add(guiMesh);
 
-    video.position.set(0, 1.5, -1);
+    video.position.set(0, 1.5, 0);
   });
 
   stage.vrButton?.onExitVR.sub(() => {
