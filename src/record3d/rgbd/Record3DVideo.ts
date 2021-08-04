@@ -63,7 +63,8 @@ export class Record3DVideo extends THREE.Group {
   }
 
   get muted() {
-    return this.#videoSource?.muted || false;
+    if (!this.#videoSource) return true;
+    else return this.#videoSource.muted;
   }
 
   set muted(value: boolean) {

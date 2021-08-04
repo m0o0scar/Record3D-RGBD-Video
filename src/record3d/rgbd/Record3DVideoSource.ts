@@ -14,8 +14,8 @@ export class Record3DVideoSource {
     this.intrMat = new THREE.Matrix3();
 
     this.videoTag = document.createElement('video');
-    // this.videoTag.autoplay = true;
-    // this.videoTag.muted = true;
+    this.videoTag.autoplay = true;
+    this.videoTag.muted = true;
     this.videoTag.loop = true;
     this.videoTag.playsInline = true;
     this.videoTag.setAttribute('playsinline', '');
