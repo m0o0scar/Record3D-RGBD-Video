@@ -63,6 +63,7 @@ async function main() {
 
     const {x, y, z} = DEFAULT_CAMERA_POSITION;
     stage.camera.position.set(x, y, z);
+    stage.orbitControls.update();
   });
 }
 
