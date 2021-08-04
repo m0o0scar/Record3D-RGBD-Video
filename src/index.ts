@@ -31,7 +31,7 @@ async function main() {
   const pointCloudFolder = gui.addFolder('Point Cloud');
   pointCloudFolder.add(video, 'pointSize', 1, 10, 1);
   pointCloudFolder.add(video, 'rangeNear', 0.1, 3, 0.1);
-  pointCloudFolder.add(video, 'rangeFar', 0.1, 3, 0.1);
+  pointCloudFolder.add(video, 'rangeFar', 0.1, 4, 0.1);
   pointCloudFolder.open();
   const videoFolder = gui.addFolder('Video');
   videoFolder.add(video, 'muted');
@@ -50,7 +50,7 @@ async function main() {
     interactiveGroup.setupEventHandlers();
     interactiveGroup.add(guiMesh);
 
-    video.position.set(0, 1.5, 0);
+    video.position.set(0, 1.5, -0.3);
   });
 
   stage.vrButton?.onExitVR.sub(() => {
