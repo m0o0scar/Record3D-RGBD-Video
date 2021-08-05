@@ -73,6 +73,14 @@ export class Record3DVideo extends THREE.Group {
     }
   }
 
+  play() {
+    this.#videoSource?.videoTag.play();
+  }
+
+  pause() {
+    this.#videoSource?.videoTag.pause();
+  }
+
   setScale(scale: number) {
     this.setMaterialUniforms((uniforms) => (uniforms.scale.value = scale));
   }
@@ -116,7 +124,8 @@ export class Record3DVideo extends THREE.Group {
       this.#videoTexture.magFilter = THREE.LinearFilter;
       this.#videoTexture.format = THREE.RGBFormat;
 
-      this.#videoSource.videoTag.play();
+      const { duration } = this.#videoSource.videoTag;
+      this.#videoSource.videoTag.currentTime = Math.min(1, duration);
 
       this.#videoMaterial.uniforms.texSize.value = [videoWidth, videoHeight];
       this.#videoMaterial.uniforms.texImg.value = this.#videoTexture;
