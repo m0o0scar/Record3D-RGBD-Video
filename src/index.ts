@@ -1,38 +1,67 @@
 import * as THREE from "three";
-import { InteractiveGroup } from 'three/examples/jsm/interactive/InteractiveGroup';
 import { HTMLMesh } from 'three/examples/jsm/interactive/HTMLMesh';
 import * as dat from 'dat.gui';
-import { Stage } from '@nospoon/3utils';
+import { Stage, VRButton } from '@nospoon/3utils';
+import { InteractiveGroup } from './three/InteractiveGroup';
 import { Record3DVideo } from './record3d/rgbd/Record3DVideo';
 
-const DEFAULT_BACKGROUND_COLOR = 0x999999;
+const DEFAULT_BACKGROUND_COLOR = 0x333333;
+const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 0, 2);
 
-const stage = new Stage({ enableGridHelper: true, enableVR: true, enableControllerPointer: true });
-stage.renderer.setClearColor(new THREE.Color(DEFAULT_BACKGROUND_COLOR));
+async function main() {
+  const supportVR = await VRButton.isVRSupported();
 
-const video = new Record3DVideo();
-video.position.set(0, 1.5, -1);
-stage.scene.add(video);
-video.loadURL('/public/sample2.mp4');
+  // stage
+  const stage = new Stage({
+    cameraPosition: DEFAULT_CAMERA_POSITION,
+    enableVR: supportVR,
+    enableControllerPointer: true,
+  });
+  stage.renderer.setClearColor(new THREE.Color(DEFAULT_BACKGROUND_COLOR));
 
-const colors = {
-  'background': DEFAULT_BACKGROUND_COLOR,
+  // rgbd video
+  const video = new Record3DVideo();
+  video.loadURL('/public/sample.mp4');
+  stage.scene.add(video);
+
+  // gui
+  const gui = new dat.GUI();
+  const guiContainer = gui.domElement.parentElement as HTMLElement;
+  guiContainer.style.zIndex = '999999';
+  const pointCloudFolder = gui.addFolder('Point Cloud');
+  pointCloudFolder.add(video, 'pointSize', 1, 10, 1);
+  pointCloudFolder.add(video, 'rangeFar', 0.1, 3, 0.1);
+  pointCloudFolder.open();
+
+  // VR interaction
+  const interactiveGroup = new InteractiveGroup(stage.renderer, stage.camera);
+  stage.scene.add(interactiveGroup);
+  const guiMesh = new HTMLMesh(gui.domElement);
+  guiMesh.position.set(-1, 1.2, -0.5);
+  guiMesh.rotation.y = Math.PI / 3;
+  guiMesh.scale.setScalar(2);
+
+  stage.vrButton?.onEnterVR.sub(() => {
+    guiContainer.style.visibility = 'hidden';
+    interactiveGroup.setupEventHandlers();
+    interactiveGroup.add(guiMesh);
+
+    video.position.set(0, 1.5, -0.3);
+    video.play();
+  });
+
+  stage.vrButton?.onExitVR.sub(() => {
+    guiContainer.style.visibility = 'visible';
+    interactiveGroup.removeEventHandlers();
+    interactiveGroup.remove(guiMesh);
+
+    video.position.set(0, 0, 0);
+    video.pause();
+
+    const {x, y, z} = DEFAULT_CAMERA_POSITION;
+    stage.camera.position.set(x, y, z);
+    stage.orbitControls.update();
+  });
 }
-const gui = new dat.GUI();
-const videoFolder = gui.addFolder('Video');
-videoFolder.add(video, 'pointSize', 1, 10, 1);
-videoFolder.add(video, 'rangeNear', 0.1, 3, 0.1);
-videoFolder.add(video, 'rangeFar', 0.1, 3, 0.1);
-videoFolder.addColor(colors, 'background').onChange((backgroundColor) => {
-  stage.renderer.setClearColor(new THREE.Color(backgroundColor));
-});
-videoFolder.open();
-gui.domElement.style.visibility = 'hidden';
 
-const interactiveGroup = new InteractiveGroup(stage.renderer, stage.camera);
-stage.scene.add(interactiveGroup);
-const guiMesh = new HTMLMesh(gui.domElement);
-guiMesh.position.set(-1, 1.2, -0.5);
-guiMesh.rotation.y = Math.PI / 3;
-guiMesh.scale.setScalar(2);
-interactiveGroup.add(guiMesh);
+main();

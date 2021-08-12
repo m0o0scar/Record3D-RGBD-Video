@@ -15,7 +15,7 @@ export class Record3DVideoSource {
 
     this.videoTag = document.createElement('video');
     // this.videoTag.autoplay = true;
-    this.videoTag.muted = true;
+    // this.videoTag.muted = true;
     this.videoTag.loop = true;
     this.videoTag.playsInline = true;
     this.videoTag.setAttribute('playsinline', '');
@@ -57,29 +57,12 @@ export class Record3DVideoSource {
     binaryMetadataReader.readAsBinaryString(videoFile);
   }
 
-  toggle(value = undefined) {
-    switch (value) {
-      case undefined: {
-        if (this.videoTag.paused) this.videoTag.play();
-        else this.videoTag.pause();
-        break;
-      }
-
-      case true:
-        this.videoTag.play();
-        break;
-
-      case false:
-        this.videoTag.pause();
-        break;
-
-      default:
-        break;
-    }
+  get muted() {
+    return this.videoTag.muted;
   }
 
-  toggleAudio() {
-    this.videoTag.muted = !this.videoTag.muted;
+  set muted(value: boolean) {
+    this.videoTag.muted = value;
   }
 
   getVideoSize() {

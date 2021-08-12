@@ -22,9 +22,8 @@ export class Record3DVideo extends THREE.Group {
 
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const boxEdges = new THREE.EdgesGeometry(boxGeometry);
-    const boxMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
+    const boxMaterial = new THREE.LineBasicMaterial({ color: 0xffff00, opacity: 0.5, transparent: true });
     this.#rangeBox = new THREE.LineSegments(boxEdges, boxMaterial);
-    this.add(this.#rangeBox);
   }
 
   async loadURL(url: string) {
@@ -63,8 +62,23 @@ export class Record3DVideo extends THREE.Group {
     this.updateDepthRange();
   }
 
-  toggle(value = undefined) {
-    this.#videoSource?.toggle(value);
+  get muted() {
+    if (!this.#videoSource) return true;
+    else return this.#videoSource.muted;
+  }
+
+  set muted(value: boolean) {
+    if (this.#videoSource) {
+      this.#videoSource.muted = value;
+    }
+  }
+
+  play() {
+    this.#videoSource?.videoTag.play();
+  }
+
+  pause() {
+    this.#videoSource?.videoTag.pause();
   }
 
   setScale(scale: number) {
@@ -79,7 +93,8 @@ export class Record3DVideo extends THREE.Group {
       uniforms.depthRangeFilterFar.value = this.#rangeFar;
     });
 
-    this.#videoObject.position.z = this.#rangeNear + size / 2;
+    this.#videoObject.position.z = this.#rangeNear;
+    this.#rangeBox.position.z = -size/2;
     this.#rangeBox.scale.set(size, size, size);
   }
 
@@ -109,7 +124,8 @@ export class Record3DVideo extends THREE.Group {
       this.#videoTexture.magFilter = THREE.LinearFilter;
       this.#videoTexture.format = THREE.RGBFormat;
 
-      this.#videoSource.videoTag.play();
+      const { duration } = this.#videoSource.videoTag;
+      this.#videoSource.videoTag.currentTime = Math.min(1, duration);
 
       this.#videoMaterial.uniforms.texSize.value = [videoWidth, videoHeight];
       this.#videoMaterial.uniforms.texImg.value = this.#videoTexture;
@@ -123,6 +139,8 @@ export class Record3DVideo extends THREE.Group {
       this.#videoMaterial.uniforms.iK.value = [ifx, ify, itx, ity];
 
       this.renderPoints();
+      
+      this.add(this.#rangeBox);
     }
   }
 
