@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { md5 } from 'hash-wasm';
+import { CacheStorage } from '../../utils/CacheStorage';
+
+const cache = new CacheStorage('videos');
 
 export class Record3DVideoSource {
   isVideoLoaded = false;
@@ -27,7 +30,7 @@ export class Record3DVideoSource {
   }
 
   async loadURL(videoURL: string) {
-    const response = await fetch(videoURL);
+    const response = await cache.fetch(videoURL);
     const file = await response.blob();
     this.loadFile(file);
   }
@@ -47,7 +50,7 @@ export class Record3DVideoSource {
       // calculate md5 hash of the file (only calculate the first 1M for performance consideration)
       const hash = await md5(fileContents.slice(0, 1024 * 1024));
       console.log(hash);
-      
+
       let meta = fileContents.substr(fileContents.lastIndexOf('{"intrinsic'));
       meta = meta.substr(0, meta.length - 1);
       const metadata = JSON.parse(meta);
