@@ -1,8 +1,5 @@
-import * as THREE from "three";
-import { HTMLMesh } from 'three/examples/jsm/interactive/HTMLMesh';
-import * as dat from 'dat.gui';
+import * as THREE from 'three';
 import { Stage, VRButton } from '@nospoon/3utils';
-import { InteractiveGroup } from './three/InteractiveGroup';
 import { Record3DVideo } from './record3d/rgbd/Record3DVideo';
 
 const DEFAULT_BACKGROUND_COLOR = 0x333333;
@@ -15,7 +12,7 @@ async function main() {
   const stage = new Stage({
     cameraPosition: DEFAULT_CAMERA_POSITION,
     enableVR: supportVR,
-    enableControllerPointer: true,
+    enableControllerPointer: true
   });
   stage.renderer.setClearColor(new THREE.Color(DEFAULT_BACKGROUND_COLOR));
 
@@ -24,41 +21,16 @@ async function main() {
   video.loadURL('/public/sample.mp4');
   stage.scene.add(video);
 
-  // gui
-  const gui = new dat.GUI();
-  const guiContainer = gui.domElement.parentElement as HTMLElement;
-  guiContainer.style.zIndex = '999999';
-  const pointCloudFolder = gui.addFolder('Point Cloud');
-  pointCloudFolder.add(video, 'pointSize', 1, 10, 1);
-  pointCloudFolder.add(video, 'rangeFar', 0.1, 3, 0.1);
-  pointCloudFolder.open();
-
-  // VR interaction
-  const interactiveGroup = new InteractiveGroup(stage.renderer, stage.camera);
-  stage.scene.add(interactiveGroup);
-  const guiMesh = new HTMLMesh(gui.domElement);
-  guiMesh.position.set(-1, 1.2, -0.5);
-  guiMesh.rotation.y = Math.PI / 3;
-  guiMesh.scale.setScalar(2);
-
   stage.vrButton?.onEnterVR.sub(() => {
-    guiContainer.style.visibility = 'hidden';
-    interactiveGroup.setupEventHandlers();
-    interactiveGroup.add(guiMesh);
-
     video.position.set(0, 1.5, -0.3);
     video.play();
   });
 
   stage.vrButton?.onExitVR.sub(() => {
-    guiContainer.style.visibility = 'visible';
-    interactiveGroup.removeEventHandlers();
-    interactiveGroup.remove(guiMesh);
-
     video.position.set(0, 0, 0);
     video.pause();
 
-    const {x, y, z} = DEFAULT_CAMERA_POSITION;
+    const { x, y, z } = DEFAULT_CAMERA_POSITION;
     stage.camera.position.set(x, y, z);
     stage.orbitControls.update();
   });
