@@ -1,6 +1,6 @@
 export class CacheStorage {
   #cacheName: string;
-  #cache: Cache;
+  #cache?: Cache;
 
   constructor(cacheName: string) {
     this.#cacheName = cacheName;

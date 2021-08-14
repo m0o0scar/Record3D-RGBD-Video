@@ -9,11 +9,14 @@
   },
   "author": "Oscar <moscartong@gmail.com>",
   "license": "MIT",
-  "browserslist": ["last 1 Chrome version"],
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
   "dependencies": {
     "@nospoon/3utils": "^0.3.0",
     "hash-wasm": "^4.9.0",
-    "three": "^0.130.1"
+    "three": "^0.130.1",
+    "three-mesh-ui": "5.2.1"
   },
   "devDependencies": {
     "@types/three": "^0.130.1",
