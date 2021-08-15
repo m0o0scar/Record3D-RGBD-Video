@@ -10,9 +10,10 @@ export class Record3DVideo extends THREE.Group {
 
   #pointSize = 1;
   #rangeNear = 0.1;
-  #rangeFar = 1;
+  #rangeFar = 1.1;
 
   #rangeBox: THREE.LineSegments;
+  #progressBar: THREE.Mesh;
 
   constructor() {
     super();
@@ -20,16 +21,36 @@ export class Record3DVideo extends THREE.Group {
     this.#videoMaterial = getPointCloudShaderMaterial();
     this.add(this.#videoObject);
 
+    const size = this.#rangeFar - this.#rangeNear;
+
     const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
     const boxEdges = new THREE.EdgesGeometry(boxGeometry);
     const boxMaterial = new THREE.LineBasicMaterial({ color: 0xffff00, opacity: 0.5, transparent: true });
     this.#rangeBox = new THREE.LineSegments(boxEdges, boxMaterial);
+    this.#rangeBox.position.z = -size / 2;
+    this.add(this.#rangeBox);
+
+    const progressBarHeight = 0.02;
+    this.#progressBar = new THREE.Mesh(
+      new THREE.PlaneBufferGeometry(size, progressBarHeight, 1, 1),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+    );
+    this.#progressBar.position.y = -(size + progressBarHeight) / 2;
+    this.#progressBar.scale.x = 0;
+    this.add(this.#progressBar);
   }
 
   async loadURL(url: string) {
     // TODO show loading screen
     const source = new Record3DVideoSource();
-    await source.loadURL(url);
+    await source.loadURL(url, (_loaded, _total, progress) => {
+      if (progress === 1) {
+        this.#progressBar.scale.x = 0;
+      } else {
+        this.#progressBar.scale.x = progress;
+        this.#progressBar.position.x = (progress - 1) / 2;
+      }
+    });
     this.setVideoSource(source);
 
     this.updateDepthRange();
@@ -94,7 +115,7 @@ export class Record3DVideo extends THREE.Group {
     });
 
     this.#videoObject.position.z = this.#rangeNear;
-    this.#rangeBox.position.z = -size/2;
+    this.#rangeBox.position.z = -size / 2;
     this.#rangeBox.scale.set(size, size, size);
   }
 
@@ -139,8 +160,6 @@ export class Record3DVideo extends THREE.Group {
       this.#videoMaterial.uniforms.iK.value = [ifx, ify, itx, ity];
 
       this.renderPoints();
-      
-      this.add(this.#rangeBox);
     }
   }
 

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { md5 } from 'hash-wasm';
 import { CacheStorage } from '../../utils/CacheStorage';
+import { fetch, onProgressCallback } from '../../utils/fetch';
 
 const cache = new CacheStorage('videos');
 
@@ -29,14 +30,12 @@ export class Record3DVideoSource {
     };
   }
 
-  async loadURL(videoURL: string) {
-    const response = await cache.fetch(videoURL);
-    const file = await response.blob();
-    this.loadFile(file);
+  async loadURL(videoURL: string, onProgress?: onProgressCallback) {
+    const file = await fetch(videoURL, { cache, onProgress });
+    if (file) this.loadFile(file);
   }
 
   loadFile(videoFile: Blob) {
-    console.log(videoFile.size);
     const dataURLReader = new FileReader();
     dataURLReader.onload = (e) => {
       this.videoTag.src = e.target?.result as string;
