@@ -17,8 +17,7 @@
     "@types/dat.gui": "0.7.7",
     "dat.gui": "0.7.7",
     "hash-wasm": "^4.9.0",
-    "three": "^0.130.1",
-    "three-mesh-ui": "5.2.1"
+    "three": "^0.130.1"
   },
   "devDependencies": {
     "@types/three": "^0.130.1",
