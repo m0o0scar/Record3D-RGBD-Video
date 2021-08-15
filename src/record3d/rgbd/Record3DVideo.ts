@@ -41,7 +41,6 @@ export class Record3DVideo extends THREE.Group {
   }
 
   async loadURL(url: string) {
-    // TODO show loading screen
     const source = new Record3DVideoSource();
     await source.loadURL(url, (_loaded, _total, progress) => {
       if (progress === 1) {
@@ -54,6 +53,10 @@ export class Record3DVideo extends THREE.Group {
     this.setVideoSource(source);
 
     this.updateDepthRange();
+  }
+
+  get hash() {
+    return this.#videoSource?.hash || '';
   }
 
   get pointSize() {
@@ -84,7 +87,7 @@ export class Record3DVideo extends THREE.Group {
   }
 
   get muted() {
-    if (!this.#videoSource) return true;
+    if (!this.#videoSource) return false;
     else return this.#videoSource.muted;
   }
 
