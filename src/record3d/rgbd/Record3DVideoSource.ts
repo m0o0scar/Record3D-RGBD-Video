@@ -1,5 +1,9 @@
 import * as THREE from 'three';
 import { md5 } from 'hash-wasm';
+import { CacheStorage } from '../../utils/CacheStorage';
+import { fetch, onProgressCallback } from '../../utils/fetch';
+
+const cache = new CacheStorage('videos');
 
 export class Record3DVideoSource {
   isVideoLoaded = false;
@@ -9,6 +13,8 @@ export class Record3DVideoSource {
   onVideoChange?: () => void;
 
   #lastVideoSize = { width: 0, height: 0 };
+
+  #hash: string;
 
   constructor() {
     this.intrMat = new THREE.Matrix3();
@@ -26,35 +32,39 @@ export class Record3DVideoSource {
     };
   }
 
-  async loadURL(videoURL: string) {
-    const response = await fetch(videoURL);
-    const file = await response.blob();
-    this.loadFile(file);
+  async loadURL(videoURL: string, onProgress?: onProgressCallback) {
+    const file = await fetch(videoURL, { cache, onProgress });
+    if (file) await this.loadFile(file);
   }
 
-  loadFile(videoFile: Blob) {
-    console.log(videoFile.size);
-    const dataURLReader = new FileReader();
-    dataURLReader.onload = (e) => {
-      this.videoTag.src = e.target?.result as string;
-    };
-    dataURLReader.readAsDataURL(videoFile);
+  loadFile(videoFile: Blob): Promise<void> {
+    return new Promise((resolve) => {
+      const dataURLReader = new FileReader();
+      dataURLReader.onload = (e) => {
+        this.videoTag.src = e.target?.result as string;
+      };
+      dataURLReader.readAsDataURL(videoFile);
 
-    const binaryMetadataReader = new FileReader();
-    binaryMetadataReader.onload = async (e) => {
-      const fileContents = e.target?.result as string;
+      const binaryMetadataReader = new FileReader();
+      binaryMetadataReader.onload = async (e) => {
+        const fileContents = e.target?.result as string;
 
-      // calculate md5 hash of the file (only calculate the first 1M for performance consideration)
-      const hash = await md5(fileContents.slice(0, 1024 * 1024));
-      console.log(hash);
-      
-      let meta = fileContents.substr(fileContents.lastIndexOf('{"intrinsic'));
-      meta = meta.substr(0, meta.length - 1);
-      const metadata = JSON.parse(meta);
-      this.intrMat.elements = metadata['intrinsicMatrix'];
-      this.intrMat.transpose();
-    };
-    binaryMetadataReader.readAsBinaryString(videoFile);
+        // calculate md5 hash of the file (only calculate the first 1M for performance consideration)
+        this.#hash = await md5(fileContents.slice(0, 1024 * 1024));
+
+        let meta = fileContents.substr(fileContents.lastIndexOf('{"intrinsic'));
+        meta = meta.substr(0, meta.length - 1);
+        const metadata = JSON.parse(meta);
+        this.intrMat.elements = metadata['intrinsicMatrix'];
+        this.intrMat.transpose();
+        resolve();
+      };
+      binaryMetadataReader.readAsBinaryString(videoFile);
+    });
+  }
+
+  get hash() {
+    return this.#hash;
   }
 
   get muted() {

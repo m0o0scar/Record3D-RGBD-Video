@@ -14,12 +14,13 @@
   ],
   "dependencies": {
     "@nospoon/3utils": "^0.3.0",
-    "dat.gui": "^0.7.7",
+    "@types/dat.gui": "0.7.7",
+    "dat.gui": "0.7.7",
     "hash-wasm": "^4.9.0",
-    "three": "^0.130.1"
+    "three": "^0.130.1",
+    "three-mesh-ui": "5.2.1"
   },
   "devDependencies": {
-    "@types/dat.gui": "^0.7.7",
     "@types/three": "^0.130.1",
     "parcel-bundler": "^1.12.5",
     "shx": "^0.3.3",
