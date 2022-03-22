@@ -51,7 +51,7 @@ async function main() {
   controls.addFolder('Video');
   controls.add(video, 'muted');
 
-  video.loadURL('/sample2.mp4').then(() => {
+  video.loadURL('/sample.mp4').then(() => {
     const config = getConfig();
     video.rotation.x = parseFloat(config['rotation.x'] || 0);
     video.pointSize = parseFloat(config['pointSize'] || 1);
