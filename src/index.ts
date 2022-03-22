@@ -46,6 +46,7 @@ async function main() {
     .add(video.rotation, 'x', -Math.PI / 4, Math.PI / 4, 0.1)
     .onChange((value) => saveConfig('rotation.x', value));
   controls.addFolder('Point Cloud');
+  controls.add(video, 'showDepthMap');
   controls.add(video, 'flatness', 1, 10, 0.1).onChange((value) => saveConfig('flatness', value));
   controls.add(video, 'pointSize', 1, 5, 1).onChange((value) => saveConfig('pointSize', value));
   controls.add(video, 'rangeFar', 1, 5).onChange((value) => saveConfig('rangeFar', value));
@@ -87,7 +88,6 @@ async function main() {
   });
 
   window.addEventListener('keydown', (e) => {
-    console.log(e.key);
     if (e.key === ' ') video.toggle();
   });
 }

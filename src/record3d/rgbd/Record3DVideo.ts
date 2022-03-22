@@ -12,6 +12,7 @@ export class Record3DVideo extends THREE.Group {
   #flatness = 1;
   #rangeNear = 0.1;
   #rangeFar = 1.1;
+  #showDepthMap = false;
 
   #rangeBox: THREE.LineSegments;
   #progressBar: THREE.Mesh;
@@ -76,6 +77,15 @@ export class Record3DVideo extends THREE.Group {
   set flatness(value: number) {
     this.#flatness = value;
     this.setMaterialUniforms(uniforms => uniforms.flatness.value = value);
+  }
+
+  get showDepthMap() {
+    return this.#showDepthMap;
+  }
+
+  set showDepthMap(value: boolean) {
+    this.#showDepthMap = value;
+    this.setMaterialUniforms(uniforms => uniforms.showDepthMap.value = value);
   }
 
   get rangeNear() {

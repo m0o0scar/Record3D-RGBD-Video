@@ -120,6 +120,7 @@ export function getPointCloudShaderMaterial()
         varying vec2 vPtPos;
         varying float vShouldDiscard;
 
+        uniform bool showDepthMap;
         uniform ivec2 texSize;
         uniform sampler2D texImg;
         
@@ -135,7 +136,9 @@ export function getPointCloudShaderMaterial()
                 discard;
             }
             
-            vec2 lookupPt = ( vec2(vPtPos.x + frameSizeF.x, vPtPos.y) + vec2(0.5) ) / vec2(texSize); 
+            vec2 lookupPt = showDepthMap
+                ? ( vec2(vPtPos) + vec2(0.5) ) / vec2(texSize)
+                : ( vec2(vPtPos.x + frameSizeF.x, vPtPos.y) + vec2(0.5) ) / vec2(texSize); 
             vec3 currColor = texture2D(texImg, lookupPt).rgb;
         
             gl_FragColor = vec4(currColor, 1.0);
@@ -146,6 +149,7 @@ export function getPointCloudShaderMaterial()
         uniforms: {
             texImg: { value: new THREE.Texture() },
             texSize: { value: [0, 0] },
+            showDepthMap: { value: false },
             iK: { value: [0, 0, 0, 0] },
             scale: { value: 1.0 },
             ptSize: { value: 1.0 },
