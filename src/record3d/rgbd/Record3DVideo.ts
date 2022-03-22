@@ -105,6 +105,16 @@ export class Record3DVideo extends THREE.Group {
     this.#videoSource?.videoTag.pause();
   }
 
+  toggle() {
+    if (this.#videoSource) {
+      if (this.#videoSource.videoTag.paused) {
+        this.#videoSource.videoTag.play();
+      } else {
+        this.#videoSource.videoTag.pause();
+      }
+    }
+  }
+
   setScale(scale: number) {
     this.setMaterialUniforms((uniforms) => (uniforms.scale.value = scale));
   }
@@ -135,7 +145,7 @@ export class Record3DVideo extends THREE.Group {
       this.onVideoTagChanged();
     }
 
-    this.renderPoints();
+    this.render();
   }
 
   private onVideoTagChanged() {
@@ -162,7 +172,7 @@ export class Record3DVideo extends THREE.Group {
 
       this.#videoMaterial.uniforms.iK.value = [ifx, ify, itx, ity];
 
-      this.renderPoints();
+      this.render();
     }
   }
 
@@ -172,12 +182,17 @@ export class Record3DVideo extends THREE.Group {
     }
   }
 
+  private render() {
+    // this.renderMesh();
+    this.renderPoints();
+  }
+
   private renderPoints() {
     this.removeVideoObjectChildren();
 
     if (this.#videoSource) {
-      let { width, height } = this.#videoSource.getVideoSize();
-      let numPoints = width * height;
+      const { width, height } = this.#videoSource.getVideoSize();
+      const numPoints = width * height;
 
       const buffIndices = new Uint32Array(numPoints);
       const buffPointIndicesAttr = new Float32Array(numPoints);
@@ -195,6 +210,51 @@ export class Record3DVideo extends THREE.Group {
       const points = new THREE.Points(geometry, this.#videoMaterial);
       points.frustumCulled = false;
       this.#videoObject.add(points);
+    }
+  }
+
+  private renderMesh() {
+    this.removeVideoObjectChildren();
+
+    if (this.#videoSource) {
+      const { width, height } = this.#videoSource.getVideoSize();
+      const numPoints = width * height;
+
+      const buffIndices = new Uint32Array((width - 1) * (height - 1) * 6);
+      const buffPointIndicesAttr = new Float32Array(numPoints);
+
+      for (let ptIdx = 0; ptIdx < numPoints; ptIdx++) {
+        buffPointIndicesAttr[ptIdx] = ptIdx;
+      }
+
+      let indicesIdx = 0;
+      const numRows = height;
+      const numCols = width;
+      for (let row = 1; row < numRows; row++) {
+        for (let col = 0; col < numCols - 1; col++) {
+          const tlIdx = (row - 1) * numCols + col;
+          const trIdx = tlIdx + 1;
+
+          const blIdx = row * numCols + col;
+          const brIdx = blIdx + 1;
+
+          buffIndices[indicesIdx++] = blIdx;
+          buffIndices[indicesIdx++] = trIdx;
+          buffIndices[indicesIdx++] = tlIdx;
+
+          buffIndices[indicesIdx++] = blIdx;
+          buffIndices[indicesIdx++] = brIdx;
+          buffIndices[indicesIdx++] = trIdx;
+        }
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('vertexIdx', new THREE.Float32BufferAttribute(buffPointIndicesAttr, 1));
+      geometry.setIndex(new THREE.Uint32BufferAttribute(new Uint32Array(buffIndices), 1));
+
+      const mesh = new THREE.Mesh(geometry, this.#videoMaterial);
+      mesh.frustumCulled = false;
+      this.#videoObject.add(mesh);
     }
   }
 

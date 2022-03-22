@@ -51,7 +51,7 @@ async function main() {
   controls.addFolder('Video');
   controls.add(video, 'muted');
 
-  video.loadURL('/sample.mp4').then(() => {
+  video.loadURL('/sample2.mp4').then(() => {
     const config = getConfig();
     video.rotation.x = parseFloat(config['rotation.x'] || 0);
     video.pointSize = parseFloat(config['pointSize'] || 1);
@@ -82,6 +82,11 @@ async function main() {
     const { x, y, z } = DEFAULT_CAMERA_POSITION;
     stage.camera.position.set(x, y, z);
     stage.orbitControls.update();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    console.log(e.key);
+    if (e.key === ' ') video.toggle();
   });
 }
 

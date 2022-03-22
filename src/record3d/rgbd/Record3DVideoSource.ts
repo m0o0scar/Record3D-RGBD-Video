@@ -14,7 +14,7 @@ export class Record3DVideoSource {
 
   #lastVideoSize = { width: 0, height: 0 };
 
-  #hash: string;
+  #hash?: string;
 
   constructor() {
     this.intrMat = new THREE.Matrix3();
