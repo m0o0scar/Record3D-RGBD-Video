@@ -9,6 +9,7 @@ export class Record3DVideo extends THREE.Group {
   #videoTexture?: THREE.VideoTexture;
 
   #pointSize = 1;
+  #flatness = 1;
   #rangeNear = 0.1;
   #rangeFar = 1.1;
 
@@ -65,7 +66,16 @@ export class Record3DVideo extends THREE.Group {
 
   set pointSize(value: number) {
     this.#pointSize = value;
-    this.setMaterialUniforms((uniforms) => (uniforms.ptSize.value = value));
+    this.setMaterialUniforms(uniforms => uniforms.ptSize.value = value);
+  }
+
+  get flatness() {
+    return this.#flatness;
+  }
+
+  set flatness(value: number) {
+    this.#flatness = value;
+    this.setMaterialUniforms(uniforms => uniforms.flatness.value = value);
   }
 
   get rangeNear() {
@@ -116,13 +126,13 @@ export class Record3DVideo extends THREE.Group {
   }
 
   setScale(scale: number) {
-    this.setMaterialUniforms((uniforms) => (uniforms.scale.value = scale));
+    this.setMaterialUniforms(uniforms => uniforms.scale.value = scale);
   }
 
   private updateDepthRange() {
     const size = this.#rangeFar - this.#rangeNear;
 
-    this.setMaterialUniforms((uniforms) => {
+    this.setMaterialUniforms(uniforms => {
       uniforms.depthRangeFilterNear.value = this.#rangeNear;
       uniforms.depthRangeFilterFar.value = this.#rangeFar;
     });

@@ -46,6 +46,7 @@ async function main() {
     .add(video.rotation, 'x', -Math.PI / 4, Math.PI / 4, 0.1)
     .onChange((value) => saveConfig('rotation.x', value));
   controls.addFolder('Point Cloud');
+  controls.add(video, 'flatness', 1, 10, 0.1).onChange((value) => saveConfig('flatness', value));
   controls.add(video, 'pointSize', 1, 5, 1).onChange((value) => saveConfig('pointSize', value));
   controls.add(video, 'rangeFar', 1, 5).onChange((value) => saveConfig('rangeFar', value));
   controls.addFolder('Video');
@@ -54,6 +55,7 @@ async function main() {
   video.loadURL('/sample.mp4').then(() => {
     const config = getConfig();
     video.rotation.x = parseFloat(config['rotation.x'] || 0);
+    video.flatness = parseFloat(config['flatness'] || 1);
     video.pointSize = parseFloat(config['pointSize'] || 1);
     video.rangeFar = parseFloat(config['rangeFar'] || 1);
     controls.updateDisplay();

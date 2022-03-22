@@ -12,6 +12,7 @@ export function getPointCloudShaderMaterial()
         uniform ivec2 texSize;
         uniform sampler2D texImg;
         uniform vec4 iK;
+        uniform float flatness;
         uniform float scale;
         uniform float ptSize;
         uniform float depthRangeFilterNear;
@@ -92,9 +93,9 @@ export function getPointCloudShaderMaterial()
             
             float currDepth = getPixelDepth(pt);
 
-            vec3 ptPos = scale * vec3(
-                (iK.x * float(ptX) + iK.z) * currDepth,
-                (iK.y * float(ptY) + iK.w) * currDepth,
+            vec3 ptPos = scale / flatness * vec3(
+                (iK.x * float(ptX) + iK.z) * currDepth * flatness,
+                (iK.y * float(ptY) + iK.w) * currDepth * flatness,
                 -currDepth
             );
 
@@ -148,6 +149,7 @@ export function getPointCloudShaderMaterial()
             iK: { value: [0, 0, 0, 0] },
             scale: { value: 1.0 },
             ptSize: { value: 1.0 },
+            flatness: { value: 1.0 },
             depthRangeFilterNear: { value: 0.1 },
             depthRangeFilterFar: { value: 5.0 },
         },
