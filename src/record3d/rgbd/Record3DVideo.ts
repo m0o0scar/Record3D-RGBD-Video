@@ -176,7 +176,7 @@ export class Record3DVideo extends THREE.Group {
       this.#videoTexture = new THREE.VideoTexture(videoTag);
       this.#videoTexture.minFilter = THREE.LinearFilter;
       this.#videoTexture.magFilter = THREE.LinearFilter;
-      this.#videoTexture.format = THREE.RGBFormat;
+      this.#videoTexture.format = THREE.RGBAFormat;
 
       const { duration } = this.#videoSource.videoTag;
       this.#videoSource.videoTag.currentTime = Math.min(1, duration);
